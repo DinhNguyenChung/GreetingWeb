@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { GreetingData, OCCASIONS } from '@/lib/types';
-import QRCodeDisplay from '@/components/QRCodeDisplay';
 import AnimatedBackground from '@/components/AnimatedBackground';
 
 export default function GreetingPage() {
@@ -13,7 +12,6 @@ export default function GreetingPage() {
   const id = params.id as string;
   const [greeting, setGreeting] = useState<GreetingData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
     const fetchGreeting = async () => {
@@ -65,16 +63,8 @@ export default function GreetingPage() {
   // Build a friendly title like: "Chúc mừng [Occasion] vui vẻ, [Name]!"
   const title = `Chúc mừng ${greeting.occasion} vui vẻ, ${greeting.recipientName}!`;
 
-  // Build the public URL for sharing. If the env var isn't set (during dev),
-  // fall back to current origin (client-side).
-  const baseUrl =
-    (process.env.NEXT_PUBLIC_BASE_URL && process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, '')) ||
-    (typeof window !== 'undefined' ? window.location.origin : '');
-
-  const greetingUrl = `${baseUrl}/greetings/${id}`;
-
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${occasionTheme.gradient} relative`}>
+    <div className={`min-h-screen bg-gradient-to-br ${occasionTheme.gradient} relative overflow-hidden`}>
       <AnimatedBackground occasion={greeting.occasion} />
       
       <div className="relative z-10 min-h-screen flex items-center justify-center py-12 px-4">
@@ -109,40 +99,6 @@ export default function GreetingPage() {
                 <span className="font-semibold">Từ:</span> {greeting.senderName || 'Một người bạn'}
               </p>
             </div>
-
-            {/* Action Buttons */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => setShowQR(!showQR)}
-                className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-lg"
-              >
-                {showQR ? '🎨 Ẩn QR Code' : '📱 Hiển thị QR Code'}
-              </button>
-              
-              <button
-                onClick={() => window.print()}
-                className="px-8 py-3 bg-white border-2 border-purple-600 text-purple-600 font-semibold rounded-xl hover:bg-purple-50 transition-all transform hover:scale-105 shadow-lg"
-              >
-                🖨️ In lời chúc
-              </button>
-            </div>
-
-            {/* QR Code Section */}
-            {showQR && (
-              <div className="mt-8 animate-fade-in">
-                <QRCodeDisplay url={greetingUrl} />
-              </div>
-            )}
-          </div>
-
-          {/* Back to Home */}
-          <div className="text-center mt-8">
-            <a
-              href="/"
-              className="text-white text-lg font-semibold hover:text-purple-200 transition-colors underline"
-            >
-              ← Tạo lời chúc mới
-            </a>
           </div>
         </div>
       </div>

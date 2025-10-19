@@ -54,8 +54,8 @@ export default function Home() {
 
       const { id } = await saveResponse.json();
 
-      // Chuyển đến trang hiển thị
-      router.push(`/greetings/${id}`);
+      // Chuyển đến trang kết quả (dành cho người tạo)
+      router.push(`/result/${id}`);
     } catch (err) {
       setError('Đã có lỗi xảy ra. Vui lòng thử lại!');
       console.error(err);
